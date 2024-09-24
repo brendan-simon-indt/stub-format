@@ -352,6 +352,7 @@ def generate_stub_functions(file_data, filename):
     file_data = remove_comments(file_data)
     lines = file_data.split("\n")
     scope = []
+    qualifier = ()
     output = "#include " + filename + "\n\n"
     indent = 0
     for l in lines:
