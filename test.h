@@ -1,11 +1,22 @@
 #ifndef HEADER_H
 #define HEADER_H
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
+void global_c_func_void_void(void);
+int global_c_func_int_int(int val);
+
+#ifdef __cplusplus
+}
+#endif
+
 namespace stub_test
 {
     const void* function_a(); // function with no args
     void function_b(int param_a, int* pointer, const int& ref); // function with args
-    
+
     class my_class
     {
     public:
@@ -17,21 +28,21 @@ namespace stub_test
         const void* function_d() = 0;       // test for virtual function
         int test = int(1);                  // initialiser
     private:
-    
+
         int function_const() const;             // const member function
         void (*function_pointer)(int b, int c); // test for function pointer
-        
+
         inline void inline_func()
         {
             int a = (int)0.0f; // some code to avoid
         }
     };
-    
+
     namespace deeper
     {
         void function_e(int a, float b, test c);
         int function_f(int b = 0); // test for default args
-        
+
         class scope_class // ignore this
         {
             // parenthesis might span multiple lines
@@ -43,21 +54,21 @@ namespace stub_test
             );
         };
     }
-    
+
     /*
         int commented_out_function_a(int b = 0);
-        
+
         struct commented_out
         {
             int a;
             int b;
             int c;
         };
-        
+
     */ void function_h(int b); // testing code on the same line as end comment
-    
+
     // int commented_out_function_b();
-    
+
     void 😎 (int a, int 🕺); // test for utf8
 }
 
