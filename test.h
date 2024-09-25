@@ -1,8 +1,11 @@
 #ifndef HEADER_H
 #define HEADER_H
 
+void global_func_void_void(void);
+int global_func_int_int(int val);
+
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 void global_c_func_void_void(void);
@@ -71,5 +74,19 @@ namespace stub_test
 
     void 😎 (int a, int 🕺); // test for utf8
 }
+
+void global_func_void_void_2(void);
+int global_func_int_int_2(int val);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void global_c_func_void_void_2(void);
+int global_c_func_int_int_2(int val);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
