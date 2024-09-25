@@ -178,20 +178,21 @@ def write_function_stub(scope, file_pos, file_data):
             else:
                 break
 
-    found = False
+    # search for start of statement (last statement terminator)
     i = file_pos
-    while not found:
-        for d in delimiters:
-            if file_data[i] == d:
-                ps = i+1
-                found = True
-                break
+    ps = 0
+    while i >= 0:
+        if file_data[i] in delimiters:
+            ps = i+1
+            break
         i -= 1
 
-    # skip over functions which have a body
+    # skip over functions which have a body (inline functions)
     nns = min(file_pos + file_data[file_pos:].find(";") + 1, ns)
-    if file_pos + file_data[file_pos:].find("{") < nns:
-        if file_pos + file_data[file_pos:].find("}") < nns:
+    brace_offset = file_data[file_pos:].find("{")
+    if brace_offset >= 0 and (file_pos + brace_offset) < nns:
+        brace_offset = file_data[file_pos:].find("}")
+        if brace_offset >= 0 and (file_pos + brace_offset) < nns:
             return
 
     ns = min(file_pos + file_data[file_pos:].find(")") + 1, ns)
@@ -236,6 +237,7 @@ def write_function_stub(scope, file_pos, file_data):
     rt_name = rt_name.split(" ")
 
     name_pos = len(rt_name) - 1
+    name = 'NONAME'
     for r in reversed(rt_name):
         if r != "":
             del rt_name[name_pos]
@@ -346,10 +348,37 @@ def remove_comments(file_data):
     return conditioned
 
 
+# remove preprocessor directives
+# crude: remove #ifdef __cplusplus blocks (extern "C")
+# crude: remove all directives (starting with #)
+def remove_directives(file_data):
+    lines = file_data.split("\n")
+    level = 0
+    conditioned = ""
+    for line in lines:
+        if level > 0:
+            eipos = line.find("#endif")
+            if eipos != -1:
+                level -= 1
+                line = line[eipos+6:]
+
+        ifpos = line.find("#ifdef __cplusplus")
+        if ifpos != -1:
+            conditioned += line[:ifpos] + "\n"
+            level += 1
+
+        if level == 0:
+            if not line.strip().startswith('#'):
+                conditioned += line + "\n"
+
+    return conditioned
+
+
 # create stub c/c++ functions
 def generate_stub_functions(file_data, filename):
     file_data = tabs_to_spaces(file_data, 4)
     file_data = remove_comments(file_data)
+    file_data = remove_directives(file_data)
     lines = file_data.split("\n")
     scope = []
     qualifier = ()
@@ -368,22 +397,22 @@ def generate_stub_functions(file_data, filename):
                     output += l + "\n"
         for i in range(0, len(tokens)):
             t = tokens[i]
-            if t[0:2] == "//":
+            if t.startswith("//"):
                 break
             if t == "namespace" or t == "class" or t == "struct":
                 if i + 1 < len(tokens):
                     qualifier = (t, tokens[i+1])
             if t.find("{") != -1:
-                if len(qualifier) > 0:
+                if qualifier:
                     if qualifier[0] == "namespace":
                         output += indent_str(indent) + qualifier[0] + " " + qualifier[1] + "\n"
-                        output += indent_str(indent) + "{\n\n"
+                        output += indent_str(indent) + "{\n"
                         indent += 1
                 scope.append(qualifier)
                 qualifier = ()
             if t.find("}") != -1:
                 close_qualifier = scope.pop()
-                if len(close_qualifier) > 0:
+                if close_qualifier:
                     if close_qualifier[0] == "namespace":
                         indent -= 1
                         output += indent_str(indent) + "}\n\n"
