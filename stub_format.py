@@ -285,6 +285,7 @@ def write_function_stub(scope, file_pos, file_data):
     definition += "("
 
     # args
+    unused = ""
     argnum = 0
     for a in args:
         default = a.find("=")
@@ -294,6 +295,9 @@ def write_function_stub(scope, file_pos, file_data):
         if argnum > 0:
             definition += ", "
         definition += a
+        arg_fields = a.split(" ")
+        if len(arg_fields) > 1:
+            unused += "    (void)" + arg_fields[-1] + ";    // unused\n"
         argnum += 1
     definition += ")"
 
@@ -306,6 +310,8 @@ def write_function_stub(scope, file_pos, file_data):
 
     # body
     definition += "{\n"
+
+    definition += unused
 
     if pointer:
         definition += "    return nullptr;"
