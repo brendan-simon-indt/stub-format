@@ -96,4 +96,6 @@ int global_c_func_int_int_2(int val);
 }
 #endif
 
+extern int global_c_func_extern_int_int(int val);
+
 #endif

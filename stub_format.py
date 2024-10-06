@@ -232,8 +232,8 @@ def write_function_stub(scope, file_pos, file_data):
 
     # return type and name
     rt_name = func[:args_start-1]
-    rt_name.replace("\t", " ")
-    rt_name.replace("\n", " ")
+    rt_name = rt_name.replace("\t", " ")
+    rt_name = rt_name.replace("\n", " ")
     rt_name = rt_name.split(" ")
 
     name_pos = len(rt_name) - 1
@@ -312,7 +312,7 @@ def write_function_stub(scope, file_pos, file_data):
     elif not void and len(rt_name) > 0:
         definition += "    return "
         for r in rt_name:
-            if r != "const" and r != "virtual":
+            if r not in ["const", "virtual", "extern"]:
                 definition += r
         definition += "();"
 
