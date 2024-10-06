@@ -382,7 +382,7 @@ def generate_stub_functions(file_data, filename):
     lines = file_data.split("\n")
     scope = []
     qualifier = ()
-    output = "#include " + filename + "\n\n"
+    output = '#include "' + filename + '"\n\n'
     indent = 0
     for l in lines:
         tokens = l.split(" ")
