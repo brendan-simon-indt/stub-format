@@ -15,6 +15,13 @@ int global_c_func_int_int(int val);
 }
 #endif
 
+#define TEST_SINGLE_LINE "single line (with parenthesis) !!"
+
+#define TEST_MULTI_LINE "multi-line 1 (with parenthesis) !!" \
+    "multi-line 2 (with parenthesis) !!" \
+    "multi-line 3 (with parenthesis) !!" \
+    "multi-line end (with parenthesis) !!"
+
 namespace stub_test
 {
     const void* function_a(); // function with no args
