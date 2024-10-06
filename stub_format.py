@@ -355,6 +355,7 @@ def remove_directives(file_data):
     lines = file_data.split("\n")
     level = 0
     conditioned = ""
+    line_continued = False
     for line in lines:
         if level > 0:
             eipos = line.find("#endif")
@@ -368,8 +369,16 @@ def remove_directives(file_data):
             level += 1
 
         if level == 0:
-            if not line.strip().startswith('#'):
+            line_stripped = line.strip()
+            line_starts_with_hash = line_stripped.startswith('#')
+            line_ends_with_backslsh = line_stripped.endswith('\\')
+            if line_continued:
+                line_continued = line_ends_with_backslsh
+            elif line_starts_with_hash:
+                line_continued = line_ends_with_backslsh
+            else:
                 conditioned += line + "\n"
+                line_continued = False
 
     return conditioned
 
